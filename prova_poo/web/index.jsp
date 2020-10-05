@@ -51,7 +51,7 @@ disciplina so1  = new disciplina("Sistemas Operacionais I","Introdução a Siste
         <title>JSP Page</title>
     </head>
     <body>
-        <h1>Nome: Henrique Pereira</h1>
+        <h1>Nome: Henrique Pereira Souza</h1>
         <h1>RA: 1290481912039</h1>
         <h1>Quantas disciplinas eu tenho: <% out.print(obj.getList().size());%></h1>
     </body>
