@@ -1,5 +1,5 @@
 package prova_poo;
-
+//Verificado
 import java.util.ArrayList;
 
 public class disciplina {
