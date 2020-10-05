@@ -3,6 +3,7 @@
 <%@page import="prova_poo.*"%>
 <!DOCTYPE html>
 <%
+ //Verificado
 double nota;
 int indice;
 
