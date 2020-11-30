@@ -1,28 +1,46 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@include file="WEB-INF/jspf/menu.jspf"%>
 <%@page import="prova_poo.*"%>
+<%@page import="prova_poo2.*"%>
+
 <!DOCTYPE html>
 <%
- //Verificado
-double nota;
-int indice;
-
-disciplina lista = (disciplina)application.getAttribute("lista");
-
-if(lista == null){
-
-lista = new disciplina("","",0);
+    String expetionMessage = null;
+    if(request.getParameter("FormInserir")!=null){
+    response.sendRedirect(request.getRequestURI());
+    }
+    if(request.getParameter("FormInserir")!=null){
+     try{
+         String nome = request.getParameter("nome");
+         String ementa = request.getParameter("ementa");
+         String ciclo = request.getParameter("ciclo");
+         Double nota = Double.parseDouble(request.getParameter("nota"));
+         disciplina.inserirDisciplina(nome, ementa, ciclo, nota);
+         response.sendRedirect(request.getRequestURI());
+     }catch(Exception ex){
+         expetionMessage = ex.getLocalizedMessage();
+     }
+ }
+    if(request.getParameter("FormAlterar")!=null){
+     try{
+         String nome = request.getParameter("nome");
+         Double nota = Double.parseDouble(request.getParameter("nota"));
+         disciplina.alterarNota(nome, nota);
+         response.sendRedirect(request.getRequestURI());
+     }catch(Exception ex){
+         expetionMessage = ex.getLocalizedMessage();
+     }
+ }
+    if(request.getParameter("FormExcluir")!=null){
+     try{
+         String nome = request.getParameter("nome");
+         disciplina.excluirDisciplina(nome);
+         response.sendRedirect(request.getRequestURI());
+     }catch(Exception ex){
+         expetionMessage = ex.getLocalizedMessage();
+     }
+ }
     
-}
-try{
-    nota = Double.parseDouble(request.getParameter("nota"));
-    indice = Integer.parseInt(request.getParameter("indice"));
-}catch(Exception e){
-    nota = -1;
-    indice = -1;
-}
-if(nota >=0 && nota <= 10) lista.getList().get(indice).setNota(nota);
-
 %>
 <html>
     <head>
@@ -30,27 +48,86 @@ if(nota >=0 && nota <= 10) lista.getList().get(indice).setNota(nota);
         <title>JSP Page</title>
     </head>
     <body>
-        <h1>Disicplina</h1>
-        <table border="1">
-            <tr>
-                <th>Disciplina</th>
-                <th>Ementa</th>
-                <th>Ciclo</th>
-                <th>Nota</th>
-            </tr>
-            <%
-            for(int i=0; i < lista.getList().size(); i++){
-            %>
-            <tr>
-                <th><%= lista.getList().get(i).getNome()%></th>
-                <th><%= lista.getList().get(i).getEmenta()%></th>
-                <th><%= lista.getList().get(i).getCiclo()%></th>
-            <form method="get">
-                <th><input type="text" name="nota" value="<%= lista.getList().get(i).getNota()%>"></th>
-                    <input type="hidden" name="indice" value="<%= i%>"/>
-                    <th><input type="submit" value="Adicionar"></th>
-            </form>
-            </tr>
-            <% } %> 
+        <div class="container-fluid">
+        <%if(request.getParameter("prepararDelete")!=null){%>
+        <fieldset>
+            <legend>Exluir Disciplina</legend>
+            <% String nome = request.getParameter("nome"); %>
+            <form method="post">
+                Excluir a categoria <b><%= nome%></b>
+                <hr/>
+                <input type="hidden" name="nome" value="<%= nome%>"/>
+                <input type="submit" name="FormExluir" value="Excluir"/>
+                <input type="submit" name="Cancelar" value="Cancelar"/>
+                </form>
+        </fieldset>
+                <%}else if(request.getParameter("prepararUpdate")!=null){%>
+        <fieldset>
+            <legend>Alterar Disciplina</legend>
+            <% String nome = request.getParameter("nome"); %>
+            <% double nota = Double.parseDouble(request.getParameter("nota"));%>
+            <form method="post">
+                <div><input type="hidden" name="nome" value="<%= nome%>"/></div>
+                <div>Nome:</div>
+                <div><input type="text" name="nome" value="<%= nome%>"/></div>
+                <div>Nota:</div>
+                <div><input type="number" name="nota" step="0.01" min="0.00" max="10.00" value="<%= nota%>"/></div>
+                <hr/>
+               <input type="submit" name="FormAlterar" value="Alterar"/>
+               <input type="submit" name="Cancelar" value="Cancelar"/>
+             </form>
+        </fieldset>
+                <%}else if(request.getParameter("prepararInsert")!=null){%>
+        <fieldset>
+            <legend>Inserir Disciplina</legend>
+            <form method="post">
+                <div>Nome:</div>
+                <div><input type="text" name="nome""/></div>
+                <div>Ementa:</div>
+                <div><input type="text" name="ementa""/></div>
+                <div>Ciclo:</div>
+                <div><input type="text" name="ciclo""/></div>
+                <div>Nota:</div>
+                <div><input type="number" name="nota" step="0.01" min="0.00" max="10.00"/></div>
+                <hr/>
+               <input type="submit" name="FormInserir" value="Inserir"/>
+               <input type="submit" name="Cancelar" value="Cancelar"/>
+             </form>
+        </fieldset>
+        <%}else{%>
+        <form method="post">
+            <input type="submit" name="prepararInsert" value="Inserir"/>
+        </form>
+        <%}%>
+<table class="table table-bordered">
+    <thead class="thead-dark">
+        <tr>
+            <th scope="col">Nome:</th>
+            <th scope="col">Ementa:</th>
+            <th scope="col">Ciclo:</th>
+            <th scope="col">Nota:</th>
+            <th scope="col">Comandos:</th>
+        </tr>
+        </thead>
+        <tbody>
+         <%for(disciplina d: disciplina.getList()){%>
+         <tr>
+           <td><%= d.getNome()%></td>
+           <td><%= d.getEmenta()%></td>
+           <td><%= d.getCiclo()%></td>
+           <td><%= d.getNota()%></td>
+           <td>
+               <form method="post">
+                   <input type="hidden" name="nota" step="0.01" min="0.00" max="10.00" value="<%= d.getNota() %>"/>
+                   <input type="hidden" name="nome" value="<%= d.getNome() %>"/>
+                   <input type="submit" name="prepararUpdate" value="Alterar"/>
+                   <input type="submit" name="prepararDelete" value="Excluir"/>
+               </form>
+           </td>
+         </tr>
+        </tbody>
+        <%}%>
+        </table>
+        </div>
     </body>
 </html>
