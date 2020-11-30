@@ -17,7 +17,7 @@ public class disciplina {
         this.nota = nota;
     }
     /**
-     * @return the nome
+     * @return the nom
      */
     public String getNome() {
         return nome;
